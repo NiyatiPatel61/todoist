@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   selectedView: string;
@@ -11,20 +12,21 @@ interface SidebarProps {
 }
 
 const projects = [
-  { id: 1, name: 'Personal', color: 'bg-teal-500', count: 5 },
-  { id: 2, name: 'Work', color: 'bg-teal-600', count: 12 },
-  { id: 3, name: 'Shopping', color: 'bg-cyan-500', count: 3 },
-  { id: 4, name: 'Health', color: 'bg-teal-700', count: 7 },
+  { id: 1, name: 'Marketing Campaign', color: '#EF4444', count: 12 },
+  { id: 2, name: 'Website Redesign', color: '#3B82F6', count: 24 },
+  { id: 3, name: 'API Development', color: '#10B981', count: 18 },
+  { id: 4, name: 'Mobile App', color: '#F59E0B', count: 30 },
 ];
 
 export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose }: SidebarProps) {
+  const router = useRouter();
   const [showProjects, setShowProjects] = useState(true);
 
   const menuItems = [
-    { id: 'inbox', icon: '📥', label: 'Inbox', count: 8 },
-    { id: 'today', icon: '📅', label: 'Today', count: 5 },
-    { id: 'upcoming', icon: '📆', label: 'Upcoming', count: 12 },
-    { id: 'filters', icon: '🔍', label: 'Filters & Labels' },
+    { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/dashboard' },
+    { id: 'my-tasks', icon: '✅', label: 'My Tasks', href: '/my-tasks', count: 8 },
+    { id: 'projects', icon: '📁', label: 'Projects', href: '/projects', count: 4 },
+    { id: 'users', icon: '👥', label: 'Team Members', href: '/users' },
   ];
 
   return (
@@ -67,12 +69,12 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
 
         {/* Add Task Button */}
         <div className="p-4">
-          <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 px-4 rounded-xl hover:from-teal-600 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5">
+          <Link href="/tasks/new" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 px-4 rounded-xl hover:from-teal-600 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             <span className="font-medium">Add Task</span>
-          </button>
+          </Link>
         </div>
 
         {/* Navigation */}
@@ -80,7 +82,8 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
           <ul className="space-y-1">
             {menuItems.map((item) => (
               <li key={item.id}>
-                <button
+                <Link
+                  href={item.href}
                   onClick={() => setSelectedView(item.id)}
                   className={`
                     w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-300
@@ -105,7 +108,7 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
                       {item.count}
                     </span>
                   )}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -127,18 +130,19 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
                 </svg>
                 Projects
               </span>
-              <button className="p-1 hover:bg-gray-200 rounded">
+              <Link href="/projects" className="p-1 hover:bg-gray-200 rounded">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-              </button>
+              </Link>
             </button>
 
             {showProjects && (
               <ul className="mt-1 space-y-1 ml-2">
                 {projects.map((project) => (
                   <li key={project.id}>
-                    <button
+                    <Link
+                      href={`/projects/${project.id}`}
                       onClick={() => setSelectedView(`project-${project.id}`)}
                       className={`
                         w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-300
@@ -149,11 +153,11 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
                       `}
                     >
                       <span className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${project.color}`}></span>
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: project.color }}></span>
                         <span className="text-sm">{project.name}</span>
                       </span>
                       <span className="text-xs text-gray-500">{project.count}</span>
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -163,11 +167,17 @@ export default function Sidebar({ selectedView, setSelectedView, isOpen, onClose
 
         {/* Bottom Section */}
         <div className="p-4 border-t border-gray-200">
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+          <button 
+            onClick={() => {
+              localStorage.removeItem('user');
+              router.push('/signin');
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span className="text-sm font-medium">Add Project</span>
+            <span className="text-sm font-medium">Logout</span>
           </button>
         </div>
       </aside>

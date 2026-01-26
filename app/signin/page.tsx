@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function SignIn() {
   const router = useRouter();
@@ -13,11 +14,16 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Redirect to home if already logged in
+  // Redirect to dashboard if already logged in and session not expired
   useEffect(() => {
     const user = localStorage.getItem('user');
-    if (user) {
-      router.push('/');
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    
+    if (user && tokenExpiry) {
+      const isExpired = Date.now() > parseInt(tokenExpiry);
+      if (!isExpired) {
+        router.push('/dashboard');
+      }
     }
   }, [router]);
 
@@ -33,24 +39,40 @@ export default function SignIn() {
     setError('');
     setLoading(true);
 
-    // Simulate API call with dummy data
-    setTimeout(() => {
-      if (formData.email && formData.password) {
-        // Extract name from email (before @)
-        const name = formData.email.split('@')[0];
-        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-        
-        localStorage.setItem('user', JSON.stringify({
-          id: 1,
-          email: formData.email,
-          name: capitalizedName
-        }));
-        router.push('/');
-      } else {
-        setError('Please provide valid credentials');
-        setLoading(false);
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Sign in failed');
       }
-    }, 1000);
+
+      // Store user data in localStorage (token is in HTTP-only cookie)
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('tokenExpiry', String(Date.now() + 3600000)); // 1 hour from now
+
+      // Show success toast
+      toast.success('Welcome back! Sign in successful', {
+        duration: 3000,
+      });
+
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during sign in');
+      toast.error(err.message || 'Sign in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

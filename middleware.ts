@@ -1,14 +1,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { jwtVerify } from "jose";
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'your-secret-key');
 
 // Define public routes that don't require authentication
-const publicRoutes = ["/login", "/signup"];
+const publicRoutes = ["/signin", "/signup"];
 
 // Define API routes that don't require authentication
-const publicApiRoutes = ["/api/auth/login", "/api/auth/signup"];
+const publicApiRoutes = ["/api/auth/signin", "/api/auth/signup"];
 
-export function middleware(request: NextRequest) {
+async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload;
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    return null;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes
@@ -34,11 +46,11 @@ export function middleware(request: NextRequest) {
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   // Verify token
-  const payload = verifyToken(token);
+  const payload = await verifyToken(token);
 
   if (!payload) {
     if (pathname.startsWith("/api/")) {
@@ -47,15 +59,14 @@ export function middleware(request: NextRequest) {
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   // Add user info to request headers for API routes
   if (pathname.startsWith("/api/")) {
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-id", payload.userId);
-    requestHeaders.set("x-user-email", payload.email);
-    requestHeaders.set("x-user-role", payload.role);
+    requestHeaders.set("x-user-id", payload.userId as string);
+    requestHeaders.set("x-user-email", payload.email as string);
 
     return NextResponse.next({
       request: {
