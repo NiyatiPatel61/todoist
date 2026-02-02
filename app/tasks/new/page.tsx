@@ -1,65 +1,160 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Sidebar from "../../components/Sidebar";
+import Header from "../../components/Header";
+import toast from "react-hot-toast";
+
+interface Project {
+  id: string;
+  name: string;
+  color: string;
+  taskLists?: TaskList[];
+}
+
+interface TaskList {
+  id: string;
+  listName: string;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export default function NewTaskPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    priority: 'medium',
-    status: 'pending',
-    project: '',
-    assignee: '',
-    dueDate: '',
-    tags: '',
+    title: "",
+    description: "",
+    priority: "Low",
+    status: "Pending",
+    projectId: "",
+    listId: "",
+    assignedTo: "",
+    dueDate: "",
   });
 
-  const projects = [
-    { id: 1, name: 'Marketing Campaign', color: '#EF4444' },
-    { id: 2, name: 'Website Redesign', color: '#3B82F6' },
-    { id: 3, name: 'API Development', color: '#10B981' },
-    { id: 4, name: 'Mobile App', color: '#F59E0B' },
-  ];
-
-  const teamMembers = [
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' },
-    { id: 3, name: 'Mike Johnson' },
-    { id: 4, name: 'Sarah Wilson' },
-    { id: 5, name: 'Tom Brown' },
-  ];
-
   useEffect(() => {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem("user");
     if (!user) {
-      router.push('/signin');
+      router.push("/signin");
+      return;
     }
+
+    const userData = JSON.parse(user);
+    setFormData((prev) => ({ ...prev, assignedTo: userData.id }));
+
+    fetchProjects();
+    fetchUsers();
   }, [router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("/api/projects");
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data.projects);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users");
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const fetchTaskLists = async (projectId: string) => {
+    try {
+      const response = await fetch(`/api/tasklists?projectId=${projectId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTaskLists(data.taskLists);
+      }
+    } catch (error) {
+      console.error("Error fetching task lists:", error);
+    }
+  };
+
+  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const projectId = e.target.value;
+    setFormData({
+      ...formData,
+      projectId,
+      listId: "",
+    });
+    if (projectId) {
+      fetchTaskLists(projectId);
+    } else {
+      setTaskLists([]);
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle task creation logic here
-    console.log('Task created:', formData);
-    router.push('/dashboard');
+
+    if (!formData.title || !formData.listId || !formData.assignedTo) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success("Task created successfully!");
+        router.push("/my-tasks");
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Failed to create task");
+      }
+    } catch (error) {
+      console.error("Error creating task:", error);
+      toast.error("An error occurred while creating the task");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <Sidebar 
-        selectedView="tasks" 
+      <Sidebar
+        selectedView="tasks"
         setSelectedView={() => {}}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -67,27 +162,52 @@ export default function NewTaskPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        
+
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                <Link href="/dashboard" className="hover:text-teal-600 transition-colors">Dashboard</Link>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <Link
+                  href="/dashboard"
+                  className="hover:text-teal-600 transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
                 <span>Create New Task</span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Task</h1>
-              <p className="text-gray-600">Fill in the details below to create a new task</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Create New Task
+              </h1>
+              <p className="text-gray-600">
+                Fill in the details below to create a new task
+              </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6"
+            >
               {/* Task Title */}
               <div>
-                <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Task Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -98,13 +218,16 @@ export default function NewTaskPage() {
                   placeholder="Enter task title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Description
                 </label>
                 <textarea
@@ -114,64 +237,71 @@ export default function NewTaskPage() {
                   placeholder="Enter task description..."
                   value={formData.description}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none resize-none placeholder-gray-500"
                 ></textarea>
               </div>
 
               {/* Priority and Status Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="priority" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Priority <span className="text-red-500">*</span>
+                  <label
+                    htmlFor="priority"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Priority
                   </label>
                   <select
                     id="priority"
                     name="priority"
-                    required
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                   >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="status" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Status <span className="text-red-500">*</span>
+                  <label
+                    htmlFor="status"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Status
                   </label>
                   <select
                     id="status"
                     name="status"
-                    required
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="inprogress">In Progress</option>
-                    <option value="completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="InProgress">In Progress</option>
+                    <option value="Completed">Completed</option>
                   </select>
                 </div>
               </div>
 
-              {/* Project and Assignee Row */}
+              {/* Project and Task List Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="project" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Select Project
+                  <label
+                    htmlFor="projectId"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Project <span className="text-red-500">*</span>
                   </label>
                   <select
-                    id="project"
-                    name="project"
-                    value={formData.project}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
+                    id="projectId"
+                    name="projectId"
+                    required
+                    value={formData.projectId}
+                    onChange={handleProjectChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                   >
-                    <option value="">No Project</option>
+                    <option value="">Select a project</option>
                     {projects.map((project) => (
                       <option key={project.id} value={project.id}>
                         {project.name}
@@ -181,30 +311,62 @@ export default function NewTaskPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="assignee" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Assign To
+                  <label
+                    htmlFor="listId"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Task List <span className="text-red-500">*</span>
                   </label>
                   <select
-                    id="assignee"
-                    name="assignee"
-                    value={formData.assignee}
+                    id="listId"
+                    name="listId"
+                    required
+                    value={formData.listId}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
+                    disabled={!formData.projectId}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
-                    <option value="">Unassigned</option>
-                    {teamMembers.map((member) => (
-                      <option key={member.id} value={member.id}>
-                        {member.name}
+                    <option value="">Select a task list</option>
+                    {taskLists.map((list) => (
+                      <option key={list.id} value={list.id}>
+                        {list.listName}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {/* Due Date and Tags Row */}
+              {/* Assignee and Due Date Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="dueDate" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label
+                    htmlFor="assignedTo"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Assign To <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="assignedTo"
+                    name="assignedTo"
+                    required
+                    value={formData.assignedTo}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+                  >
+                    <option value="">Select assignee</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="dueDate"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
                     Due Date
                   </label>
                   <input
@@ -216,38 +378,6 @@ export default function NewTaskPage() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                   />
                 </div>
-
-                <div>
-                  <label htmlFor="tags" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Tags
-                  </label>
-                  <input
-                    type="text"
-                    id="tags"
-                    name="tags"
-                    placeholder="design, urgent, review (comma separated)"
-                    value={formData.tags}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Attachments */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Attachments
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-teal-500 transition-all cursor-pointer">
-                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p className="text-gray-600 mb-1">
-                    <span className="font-semibold text-teal-600">Click to upload</span> or drag and drop
-                  </p>
-                  <p className="text-sm text-gray-500">PDF, PNG, JPG up to 10MB</p>
-                  <input type="file" className="hidden" multiple />
-                </div>
               </div>
 
               {/* Form Actions */}
@@ -255,15 +385,42 @@ export default function NewTaskPage() {
                 <button
                   type="button"
                   onClick={() => router.back()}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30"
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Create Task
+                  {loading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Task"
+                  )}
                 </button>
               </div>
             </form>
@@ -272,16 +429,30 @@ export default function NewTaskPage() {
             <div className="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-6">
               <div className="flex gap-3">
                 <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-blue-900 mb-2">Quick Tips</h3>
+                  <h3 className="font-semibold text-blue-900 mb-2">
+                    Quick Tips
+                  </h3>
                   <ul className="text-sm text-blue-800 space-y-1">
                     <li>• Use clear, action-oriented task titles</li>
                     <li>• Set realistic due dates to manage expectations</li>
-                    <li>• Assign tasks to specific team members for accountability</li>
+                    <li>
+                      • Assign tasks to specific team members for accountability
+                    </li>
                     <li>• Add relevant tags to make tasks easier to find</li>
                   </ul>
                 </div>

@@ -71,3 +71,24 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out;
 }
+
+/* Make all placeholders visible */
+::placeholder {
+  color: #9ca3af; /* gray-400 */
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}

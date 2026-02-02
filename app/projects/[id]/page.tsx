@@ -5,64 +5,171 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
+import toast from 'react-hot-toast';
+
+interface TaskList {
+  id: string;
+  listName: string;
+  tasks: Task[];
+}
+
+interface Task {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  assignedUser: {
+    id: string;
+    name: string;
+  };
+}
+
+interface Project {
+  id: string;
+  projectName: string;
+  description?: string;
+  taskLists: TaskList[];
+  creator: {
+    name: string;
+  };
+  createdAt: string;
+}
 
 export default function ProjectDetailPage() {
   const router = useRouter();
   const params = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('tasks');
-
-  const project = {
-    id: params.id,
-    name: 'Marketing Campaign',
-    color: '#EF4444',
-    description: 'Q1 Marketing campaign for product launch including social media, email marketing, and content creation.',
-    tasks: 12,
-    completed: 8,
-    members: [
-      { id: 1, name: 'John Doe', avatar: 'JD', role: 'Project Manager' },
-      { id: 2, name: 'Jane Smith', avatar: 'JS', role: 'Designer' },
-      { id: 3, name: 'Mike Johnson', avatar: 'MJ', role: 'Developer' },
-      { id: 4, name: 'Sarah Wilson', avatar: 'SW', role: 'Marketing' },
-      { id: 5, name: 'Tom Brown', avatar: 'TB', role: 'Content Writer' },
-    ],
-    taskLists: [
-      {
-        id: 1,
-        name: 'Planning',
-        tasks: [
-          { id: 1, title: 'Define target audience', completed: true, priority: 'high', assignee: 'John Doe' },
-          { id: 2, title: 'Create marketing strategy', completed: true, priority: 'high', assignee: 'Sarah Wilson' },
-          { id: 3, title: 'Set campaign goals', completed: true, priority: 'medium', assignee: 'John Doe' },
-        ]
-      },
-      {
-        id: 2,
-        name: 'Design',
-        tasks: [
-          { id: 4, title: 'Create brand guidelines', completed: true, priority: 'high', assignee: 'Jane Smith' },
-          { id: 5, title: 'Design social media graphics', completed: false, priority: 'medium', assignee: 'Jane Smith' },
-          { id: 6, title: 'Create email templates', completed: false, priority: 'medium', assignee: 'Jane Smith' },
-        ]
-      },
-      {
-        id: 3,
-        name: 'Execution',
-        tasks: [
-          { id: 7, title: 'Write blog posts', completed: false, priority: 'high', assignee: 'Tom Brown' },
-          { id: 8, title: 'Schedule social media posts', completed: false, priority: 'medium', assignee: 'Sarah Wilson' },
-          { id: 9, title: 'Setup email campaigns', completed: false, priority: 'high', assignee: 'Mike Johnson' },
-        ]
-      },
-    ]
-  };
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [newListName, setNewListName] = useState("");
+  const [showNewListModal, setShowNewListModal] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user) {
       router.push('/signin');
+      return;
     }
-  }, [router]);
+    
+    fetchProject();
+  }, [router, params.id]);
+
+  const fetchProject = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/projects/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProject(data.project);
+      } else {
+        toast.error('Failed to fetch project');
+        router.push('/projects');
+      }
+    } catch (error) {
+      console.error('Error fetching project:', error);
+      toast.error('An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateList = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newListName.trim()) return;
+
+    try {
+      const response = await fetch('/api/tasklists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: params.id,
+          listName: newListName,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Task list created successfully');
+        setNewListName("");
+        setShowNewListModal(false);
+        fetchProject();
+      } else {
+        toast.error('Failed to create task list');
+      }
+    } catch (error) {
+      console.error('Error creating task list:', error);
+      toast.error('An error occurred');
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-100 text-green-700';
+      case 'inprogress':
+        return 'bg-blue-100 text-blue-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-700';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!confirm('Are you sure you want to delete this project? This will delete all tasks.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/projects/${params.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast.success('Project deleted successfully');
+        router.push('/projects');
+      } else {
+        toast.error('Failed to delete project');
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('An error occurred');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-gray-50">
+        <Sidebar selectedView="projects" setSelectedView={() => {}} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <main className="flex-1 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return null;
+  }
+
+  const totalTasks = project.taskLists.reduce((sum, list) => sum + list.tasks.length, 0);
+  const completedTasks = project.taskLists.reduce((sum, list) => 
+    sum + list.tasks.filter(t => t.status === 'Completed').length, 0
+  );
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -85,19 +192,12 @@ export default function ProjectDetailPage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span>{project.name}</span>
+                <span>{project.projectName}</span>
               </div>
 
               <div className="flex items-start justify-between mb-6">
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg"
-                    style={{ backgroundColor: project.color }}
-                  >
-                    {project.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.projectName}</h1>
                     <p className="text-gray-600 max-w-2xl">{project.description}</p>
                   </div>
                 </div>
