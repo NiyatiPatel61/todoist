@@ -132,7 +132,7 @@ export default function KanbanBoardPage() {
                   </svg>
                   List View
                 </Link>
-                <button className="px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30">
+                <button className="px-4 py-2 bg-linear-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30">
                   + Add Task
                 </button>
               </div>
@@ -145,7 +145,7 @@ export default function KanbanBoardPage() {
               {columns.map((column) => (
                 <div
                   key={column.id}
-                  className="flex-1 min-w-[320px] max-w-[400px] flex flex-col"
+                  className="flex-1 min-w-[320px] max-w-100 flex flex-col"
                   onDragOver={handleDragOver}
                   onDrop={() => handleDrop(column.status)}
                 >
@@ -190,7 +190,7 @@ export default function KanbanBoardPage() {
 
                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-6 h-6 bg-linear-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
                               {task.assignee.split(' ').map(n => n[0]).join('')}
                             </div>
                             <span className="text-xs text-gray-600">{task.assignee}</span>

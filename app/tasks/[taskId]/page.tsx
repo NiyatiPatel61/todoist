@@ -190,7 +190,7 @@ export default function TaskDetailPage() {
                   <div className="space-y-4 mb-6">
                     {task.comments.map((comment) => (
                       <div key={comment.id} className="flex gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
                           {comment.avatar}
                         </div>
                         <div className="flex-1">
@@ -208,7 +208,7 @@ export default function TaskDetailPage() {
 
                   {/* Add Comment Form */}
                   <form onSubmit={handleCommentSubmit} className="flex gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
+                    <div className="w-10 h-10 bg-linear-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
                       Y
                     </div>
                     <div className="flex-1">
@@ -222,7 +222,7 @@ export default function TaskDetailPage() {
                       <div className="flex justify-end mt-2">
                         <button
                           type="submit"
-                          className="px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30"
+                          className="px-4 py-2 bg-linear-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30"
                         >
                           Post Comment
                         </button>
@@ -237,7 +237,7 @@ export default function TaskDetailPage() {
                   <div className="space-y-4">
                     {task.history.map((item, idx) => (
                       <div key={idx} className="flex gap-3">
-                        <div className="w-2 h-2 bg-teal-600 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-teal-600 rounded-full mt-2 shrink-0"></div>
                         <div className="flex-1 pb-4 border-b border-gray-100 last:border-0">
                           <p className="text-sm text-gray-900">
                             <span className="font-medium">{item.user}</span>
@@ -266,7 +266,7 @@ export default function TaskDetailPage() {
                     <div>
                       <label className="text-sm font-medium text-gray-600 mb-1 block">Assignee</label>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-8 h-8 bg-linear-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                           {task.assignee.avatar}
                         </div>
                         <span className="text-gray-900 font-medium">{task.assignee.name}</span>
@@ -286,7 +286,7 @@ export default function TaskDetailPage() {
                     <div>
                       <label className="text-sm font-medium text-gray-600 mb-1 block">Created By</label>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                           {task.creator.avatar}
                         </div>
                         <span className="text-gray-900 font-medium">{task.creator.name}</span>

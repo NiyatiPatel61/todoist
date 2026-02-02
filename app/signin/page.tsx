@@ -78,11 +78,11 @@ export default function SignIn() {
   return (
     <div className="h-screen flex bg-white overflow-hidden">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-600 p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-teal-500 via-teal-600 to-cyan-600 p-12 flex-col justify-between relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute top-20 right-20 w-64 h-64 bg-teal-400/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 left-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
         
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-8 group cursor-pointer">
@@ -94,7 +94,7 @@ export default function SignIn() {
           <div className="space-y-4">
             <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
               Organize your<br />
-              <span className="bg-gradient-to-r from-white to-teal-100 bg-clip-text text-transparent">work and life</span>
+              <span className="bg-linear-to-r from-white to-teal-100 bg-clip-text text-transparent">work and life</span>
             </h1>
             <p className="text-teal-50 text-xl font-light leading-relaxed max-w-md">
               The world's #1 task manager and to-do list app
@@ -125,7 +125,7 @@ export default function SignIn() {
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8">
             <div className="flex items-center gap-2 justify-center mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-linear-to-br from-teal-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-2xl">T</span>
               </div>
               <span className="font-bold text-3xl text-gray-900">Todoist</span>
@@ -134,19 +134,19 @@ export default function SignIn() {
 
           <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-full blur-3xl opacity-30"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-teal-50 to-cyan-50 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-teal-50 to-cyan-50 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-linear-to-tr from-teal-50 to-cyan-50 rounded-full blur-3xl opacity-30"></div>
             
             <div className="relative z-10">
               <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent mb-3">Welcome back</h2>
+                <h2 className="text-4xl font-bold bg-linear-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent mb-3">Welcome back</h2>
                 <p className="text-gray-500 text-lg">Sign in to continue to your account</p>
               </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-3 animate-slide-down shadow-sm">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span className="font-medium">{error}</span>
@@ -217,7 +217,7 @@ export default function SignIn() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3.5 rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 transform hover:-translate-y-0.5"
+                className="w-full bg-linear-to-r from-teal-600 to-cyan-600 text-white py-3.5 rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 transform hover:-translate-y-0.5"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

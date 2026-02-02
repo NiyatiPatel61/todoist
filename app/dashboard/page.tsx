@@ -157,7 +157,7 @@ export default function DashboardPage() {
             {/* Recent Project Activity & Quick Create */}
             <div className="space-y-6">
               {/* Quick Task Creation */}
-              <div className="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl p-6 text-white">
+              <div className="bg-linear-to-br from-teal-500 to-cyan-600 rounded-2xl p-6 text-white">
                 <h2 className="text-lg font-bold mb-3">Quick Task Creation</h2>
                 <p className="text-teal-50 text-sm mb-4">Create a new task in seconds</p>
                 <Link href="/tasks/new" className="block w-full bg-white text-teal-600 py-3 rounded-xl font-semibold hover:bg-teal-50 transition-all text-center">

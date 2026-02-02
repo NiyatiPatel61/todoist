@@ -111,7 +111,7 @@ export default function ProjectDetailPage() {
                     </svg>
                     Board View
                   </Link>
-                  <button className="px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30">
+                  <button className="px-4 py-2 bg-linear-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all shadow-lg shadow-teal-500/30">
                     Add Task
                   </button>
                 </div>
@@ -238,7 +238,7 @@ export default function ProjectDetailPage() {
                     <div key={member.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold">
+                          <div className="w-12 h-12 bg-linear-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold">
                             {member.avatar}
                           </div>
                           <div>
