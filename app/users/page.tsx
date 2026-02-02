@@ -82,7 +82,7 @@ export default function UsersPage() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch("/api/users", {
         method: "POST",
@@ -108,7 +108,7 @@ export default function UsersPage() {
 
   const handleEditUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!editingUser) return;
 
     try {
@@ -365,149 +365,149 @@ export default function UsersPage() {
                 </div>
               ) : (
                 <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          User
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Role
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Tasks
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Last Active
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {filteredUsers.map((user) => (
-                        <tr
-                          key={user.id}
-                          className="hover:bg-gray-50 transition-colors"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold">
-                                {user.avatar}
-                              </div>
-                              <div>
-                                <p className="font-semibold text-gray-900">
-                                  {user.name}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  {user.email}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize ${getRoleColor(user.role)}`}
-                            >
-                              {getRoleDisplayName(user.role)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
-                                user.status === "active"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-gray-100 text-gray-700"
-                              }`}
-                            >
-                              {user.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm font-medium text-gray-900">
-                              {user.tasksCount} tasks
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm text-gray-600">
-                              {user.lastActive}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <button 
-                                onClick={() => openEditModal(user)}
-                                className="p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  />
-                                </svg>
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteUser(user.id)}
-                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            User
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Role
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Tasks
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Last Active
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {filteredUsers.length === 0 && !loading && (
-                  <div className="text-center py-12">
-                    <svg
-                      className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      No users found
-                    </h3>
-                    <p className="text-gray-600">
-                      Try adjusting your search or filters
-                    </p>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {filteredUsers.map((user) => (
+                          <tr
+                            key={user.id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold">
+                                  {user.avatar}
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-900">
+                                    {user.name}
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    {user.email}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize ${getRoleColor(user.role)}`}
+                              >
+                                {getRoleDisplayName(user.role)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                                  user.status === "active"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {user.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm font-medium text-gray-900">
+                                {user.tasksCount} tasks
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm text-gray-600">
+                                {user.lastActive}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => openEditModal(user)}
+                                  className="p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                )}
-              </div>
+
+                  {filteredUsers.length === 0 && !loading && (
+                    <div className="text-center py-12">
+                      <svg
+                        className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                        />
+                      </svg>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        No users found
+                      </h3>
+                      <p className="text-gray-600">
+                        Try adjusting your search or filters
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -549,7 +549,9 @@ export default function UsersPage() {
                   required
                   placeholder="Enter full name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
@@ -562,7 +564,9 @@ export default function UsersPage() {
                   required
                   placeholder="user@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
@@ -570,9 +574,11 @@ export default function UsersPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Role <span className="text-red-500">*</span>
                 </label>
-                <select 
+                <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
                 >
                   <option value="STAFF">Member</option>
@@ -589,7 +595,9 @@ export default function UsersPage() {
                   required
                   placeholder="Enter password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
@@ -651,7 +659,9 @@ export default function UsersPage() {
                   required
                   placeholder="Enter full name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
@@ -664,7 +674,9 @@ export default function UsersPage() {
                   required
                   placeholder="user@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
@@ -672,9 +684,11 @@ export default function UsersPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Role <span className="text-red-500">*</span>
                 </label>
-                <select 
+                <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none bg-white"
                 >
                   <option value="STAFF">Member</option>
@@ -684,13 +698,18 @@ export default function UsersPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password <span className="text-xs text-gray-500">(leave blank to keep current)</span>
+                  Password{" "}
+                  <span className="text-xs text-gray-500">
+                    (leave blank to keep current)
+                  </span>
                 </label>
                 <input
                   type="password"
                   placeholder="Enter new password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none placeholder-gray-500"
                 />
               </div>
