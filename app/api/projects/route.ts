@@ -136,67 +136,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Helper function to generate consistent colors from project names
 function generateColorFromName(name: string): string {
   const colors = [
     "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899",
     "#14B8A6", "#F97316", "#06B6D4", "#6366F1"
   ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return colors[Math.abs(hash) % colors.length];
-
-    if (!projectName) {
-      return NextResponse.json(
-        { error: "Project name is required" },
-        { status: 400 }
-      );
-    }
-
-    // Create the project
-    const project = await prisma.project.create({
-      data: {
-        projectName,
-        description: description || "",
-        createdBy: userId,
-      },
-    });
-
-    // Create a default task list for the project
-    await prisma.taskList.create({
-      data: {
-        projectId: project.id,
-        listName: "To Do",
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      project: {
-        id: project.id,
-        name: project.projectName,
-        description: project.description,
-        color: generateColorFromName(project.projectName),
-        tasks: 0,
-        completed: 0,
-        members: 1,
-        status: "active",
-        createdAt: project.createdAt,
-      },
-    });
-  } catch (error) {
-    console.error("Project creation error:", error);
-    return NextResponse.json(
-      { error: "Failed to create project" },
-      { status: 500 }
-    );
-  }
-}
-
-// Helper function to generate consistent colors from project names
-function generateColorFromName(name: string): string {
-  const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
